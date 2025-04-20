@@ -1,0 +1,28 @@
+# Causal discovery on two large‐cap tickers over 2021
+curl -X POST http://localhost:8000/causal/discover \
+  -H "Content-Type: application/json" \
+  -d '{
+    "symbols": ["AAPL","MSFT"],
+    "start_date": "2021-01-01",
+    "end_date": "2021-12-31",
+    "alpha": 0.05
+  }'
+# Feature select with valid target
+curl -X POST http://localhost:8000/features/select \
+  -H "Content-Type: application/json" \
+  -d '{
+    "symbols": ["AAPL","MSFT","GOOG"],
+    "start_date": "2021-01-01",
+    "end_date": "2021-12-31",
+    "alpha": 0.05,
+    "target": "AAPL"
+  }'
+# Train agent with enough timesteps and data
+curl -X POST http://localhost:8000/agent/train \
+  -H "Content-Type: application/json" \
+  -d '{
+    "symbols": ["AAPL","MSFT","GOOG"],
+    "start_date": "2021-01-01",
+    "end_date": "2021-12-31",
+    "total_timesteps": 5000
+  }'
