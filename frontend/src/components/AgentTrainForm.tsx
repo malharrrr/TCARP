@@ -13,6 +13,7 @@ export default function AgentTrainForm() {
     e.preventDefault();
     setError(null);
     setModelId(null);
+
     const symList = symbols.split(',').map(s => s.trim()).filter(Boolean);
     try {
       const res = await axios.post('http://localhost:8000/agent/train', {
@@ -23,7 +24,12 @@ export default function AgentTrainForm() {
       });
       setModelId(res.data.model_id);
     } catch (err: any) {
-      setError(err.response?.data || err.message);
+      const d = err.response?.data;
+      const msg = typeof d === 'object'
+        ? (d.detail ?? JSON.stringify(d))
+        : (d ?? err.message);
+      console.error('API error payload:', d);
+      setError(msg);
     }
   };
 

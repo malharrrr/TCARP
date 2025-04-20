@@ -15,17 +15,20 @@ export default function CausalDiscoverForm() {
     e.preventDefault();
     setError(null);
     setEdges(null);
+
     const symList = symbols.split(',').map(s => s.trim()).filter(Boolean);
     try {
       const res = await axios.post('http://localhost:8000/causal/discover', {
-        symbols: symList,
-        start_date: startDate,
-        end_date: endDate,
-        alpha: alpha
+        symbols: symList, start_date: startDate, end_date: endDate, alpha
       });
       setEdges(res.data.edges);
     } catch (err: any) {
-      setError(err.response?.data || err.message);
+      const d = err.response?.data;
+      const msg = typeof d === 'object'
+        ? (d.detail ?? JSON.stringify(d))
+        : (d ?? err.message);
+      console.error('API error payload:', d);
+      setError(msg);
     }
   };
 

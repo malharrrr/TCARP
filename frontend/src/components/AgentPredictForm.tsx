@@ -13,6 +13,7 @@ export default function AgentPredictForm() {
     e.preventDefault();
     setError(null);
     setActions(null);
+
     const symList = symbols.split(',').map(s => s.trim()).filter(Boolean);
     try {
       const res = await axios.post('http://localhost:8000/agent/predict', {
@@ -21,12 +22,19 @@ export default function AgentPredictForm() {
         start_date: startDate,
         end_date: endDate
       });
-      const mapped = (res.data.actions as number[]).map(i => symList[i] || `idx${i}`);
+      const mapped = (res.data.actions as number[])
+        .map(i => symList[i] || `idx${i}`);
       setActions(mapped);
     } catch (err: any) {
-      setError(err.response?.data || err.message);
+      const d = err.response?.data;
+      const msg = typeof d === 'object'
+        ? (d.detail ?? JSON.stringify(d))
+        : (d ?? err.message);
+      console.error('API error payload:', d);
+      setError(msg);
     }
   };
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

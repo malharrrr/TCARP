@@ -16,18 +16,24 @@ export default function FeatureSelectForm() {
     e.preventDefault();
     setError(null);
     setResult(null);
+
     const symList = symbols.split(',').map(s => s.trim()).filter(Boolean);
     try {
       const res = await axios.post('http://localhost:8000/features/select', {
         symbols: symList,
         start_date: startDate,
         end_date: endDate,
-        alpha: alpha,
-        target: target
+        alpha,
+        target
       });
       setResult(res.data);
     } catch (err: any) {
-      setError(err.response?.data || err.message);
+      const d = err.response?.data;
+      const msg = typeof d === 'object'
+        ? (d.detail ?? JSON.stringify(d))
+        : (d ?? err.message);
+      console.error('API error payload:', d);
+      setError(msg);
     }
   };
 
