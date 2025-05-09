@@ -10,42 +10,9 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: local
     ports:
-      - "5433:5432"             # map container 5432 → host 5433
+      - "5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-
-  backend:
-    image: python:3.9-slim
-    container_name: tcarp-backend
-    working_dir: /app
-    env_file:
-      - ./backend/.env
-    volumes:
-      - ./backend:/app
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    command: >
-      bash -c "
-        pip install --no-cache-dir -r requirements.txt &&
-        uvicorn main:app --host 0.0.0.0 --reload
-      "
-
-  frontend:
-    image: node:18
-    container_name: tcarp-frontend
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules    # anonymous volume to persist modules
-    ports:
-      - "3000:3000"
-    command: >
-      bash -c "
-        npm install &&
-        npm run dev -- --host 0.0.0.0
-      "
 
 volumes:
   db_data:
